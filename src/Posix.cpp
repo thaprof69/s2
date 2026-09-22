@@ -97,7 +97,7 @@ void set_mincount(int fd, int mcount)
     tty.c_cc[VTIME] = 5;        /* half second timer */
 
     if (tcsetattr(fd, TCSANOW, &tty) < 0)
-        printf("Error tcsetattr: %s\n", strerror(errno));
+        fprintf(stderr, "Error tcsetattr: %s\n", strerror(errno));
 }
 
 std::shared_ptr<S2::Stream> S2::DefaultStreamFactory::Open(Devices &devices, Generator & generator)

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
+#include <chrono>
 
 enum Commands
 {
@@ -150,10 +151,13 @@ void S2::Generator::Send(const char * buffer)
 	int written = stream->Write(buffer, len);
 	char returnBuffer[20];
 	int bytes; //  = Read(returnBuffer, 4);
+	auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
 	do
 	{
 		Sleep(0.01);	// !! Should not be needed any more
 		bytes = stream->Read(returnBuffer, 4);
+		if (bytes == 0 && std::chrono::steady_clock::now() >= deadline)
+			throw IOError("Timed out waiting for generator acknowledgement");
 	} while (bytes == 0);
 	returnBuffer[4] = 0;
 	if (bytes != 4 || returnBuffer[0] != 'o' || returnBuffer[1] != 'k')

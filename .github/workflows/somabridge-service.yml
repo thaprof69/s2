@@ -1,0 +1,23 @@
+name: SomaBridge s2 service
+
+on: [push, pull_request]
+
+jobs:
+  build-and-contract:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release --parallel
+      - name: Upstream unit suite (Unix)
+        if: runner.os != 'Windows'
+        run: ./build/unittests
+      - name: Upstream unit suite (Windows)
+        if: runner.os == 'Windows'
+        run: ./build/Release/unittests.exe

@@ -55,11 +55,14 @@ S2::InvalidUnit::InvalidUnit(const char * option) : InvalidCommandLineArgument(o
 {
 }
 
-S2::Options::Options(int argc, const char *argv[]) : dataDir(DataDirectory())
+S2::Options::Options(int argc, const char *argv[], bool useSettings) : dataDir(useSettings ? DataDirectory() : ""), useSettings(useSettings)
 {
 	this->argc = argc;
 	this->argv = argv;
-	command = argv[1];
+	// Several library consumers construct Options with no command line.  The
+	// original constructor dereferenced argv[1] even for that supported default
+	// form, which is undefined behaviour and crashes current macOS toolchains.
+	command = (argc > 1 && argv != nullptr) ? argv[1] : "";
 	iterations = 1;
 	generator = 0;
 	pulse = 0;
@@ -72,15 +75,18 @@ S2::Options::Options(int argc, const char *argv[]) : dataDir(DataDirectory())
 	frequency = std::nan("");
 	amplitude = 10.0;
 
-	Visit(*this);
+	if (argc > 1 && argv != nullptr)
+		Visit(*this);
 }
 
 void S2::Options::Visit(OptionsVisitor&visitor) const
 {
 	// Visit the command line
-	auto name = DataFile("settings.txt");
-	std::ifstream file1(name);
-	if (file1) VisitFile(file1, visitor);
+	if (useSettings) {
+		auto name = DataFile("settings.txt");
+		std::ifstream file1(name);
+		if (file1) VisitFile(file1, visitor);
+	}
 
 	for (int i = 2; i < argc; ++i)
 	{

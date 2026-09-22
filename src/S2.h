@@ -22,7 +22,7 @@ namespace S2
 		IOError(const char * message);
 	};
 		
-	class DeviceNotFound : IOError
+	class DeviceNotFound : public IOError
 	{
 	public:
 		DeviceNotFound();

@@ -58,7 +58,13 @@ include_directories(src)
 add_executable(s2 cmdline/Main.cpp)
 target_link_libraries(s2 s2core)
 
-install (TARGETS s2 DESTINATION bin)
+# GPL service boundary used by the proprietary SomaBridge supervisor. The
+# protocol is versioned JSON Lines over inherited stdin/stdout; diagnostics go
+# to stderr. No s2 implementation source is copied across the process boundary.
+add_executable(somabridge-s2-service service/SomaBridgeService.cpp)
+target_link_libraries(somabridge-s2-service s2core)
+
+install (TARGETS s2 somabridge-s2-service DESTINATION bin)
 
 add_executable(unittests 
 	tests/Tests.cpp

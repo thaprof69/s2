@@ -54,8 +54,8 @@ class GeneratorTests
 
 void testGenerator()
 {
-	const char * args[] = { "s2", "control" };
-	S2::Options options(2, args);
+	const char * args[] = { "s2", "control", "simulation=on" };
+	S2::Options options(3, args);
 	S2::Devices devices(options);
 	TestStreamFactory sf;
 	S2::Generator g(1,"");
@@ -64,8 +64,8 @@ void testGenerator()
 
 void testPulse()
 {
-	const char * args[] = { "s2", "control" };
-	S2::Options options(2, args);
+	const char * args[] = { "s2", "control", "simulation=on" };
+	S2::Options options(3, args);
 	S2::Devices devices(options);
 	TestStreamFactory sf;
 

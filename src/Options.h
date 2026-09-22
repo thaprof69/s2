@@ -77,7 +77,7 @@ namespace S2
 
 	struct Options : public OptionsVisitor
 	{
-          Options(int argc = 0, const char *argv[] = {});
+          Options(int argc = 0, const char *argv[] = {}, bool useSettings = true);
           int argc;
           const char **argv;
 
@@ -137,6 +137,7 @@ namespace S2
           void Iterations(int i);
 
 	private:
+		bool useSettings;
 		// Gets the name of the data directory.
 		// Creates the directory if it doesn't exist.
 		// e.g. ~/.s2

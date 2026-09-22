@@ -106,16 +106,19 @@ S2::Devices::Devices(const Options & options)
 
 	FindDevices();
 
-	impl = std::make_shared<Impl>();
-
-	int count=0;
-	for(auto &device : impl->hm.devices)
-	{
-		count++;
-		if(device.VendorId()==1602 && device.ProductId()==7)
+	// GeneratorX serial discovery must remain available if macOS denies
+	// access to unrelated HID pulse devices.
+	try {
+		impl = std::make_shared<Impl>();
+		int count=0;
+		for(auto &device : impl->hm.devices)
 		{
-			pulses.push_back(Pulse(count, "pulse"));
+			count++;
+			if(device.VendorId()==1602 && device.ProductId()==7)
+				pulses.push_back(Pulse(count, "pulse"));
 		}
+	} catch (const S2::IOError &error) {
+		std::cerr << "Pulse HID enumeration unavailable: " << error.what() << std::endl;
 	}
 }
 
